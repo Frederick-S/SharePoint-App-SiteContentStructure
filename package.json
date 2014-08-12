@@ -6,6 +6,9 @@
         "type": "git",
         "url": "https://github.com/Frederick-S/Learn-German-Everyday.git"
     },
+    "dependencies": {
+        "gitbook-plugin-quizzes": "git+https://git@github.com/Frederick-S/plugin-quizzes.git"
+    },
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-gitbook": "0.5.6",
