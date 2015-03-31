@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <ClientWebPart Name="SiteContentStructureAppPart" Title="Site Content Structure AppPart" Description="Display site content structure in tree view" DefaultWidth="500" DefaultHeight="500">
+    <Content Type="html" Src="~appWebUrl/Pages/SiteContentStructureAppPart.html?{StandardTokens}" />
+    <Properties>
+    </Properties>
+  </ClientWebPart>
+</Elements>

@@ -43,11 +43,18 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Pages\SiteContentStructureAppPart.html" />
+    <Content Include="SiteContentStructureAppPart\Elements.xml">
+      <OpcRelationship>feature-elementmanifest</OpcRelationship>
+    </Content>
     <None Include="Pages\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{6553d739-58d0-4486-97c3-f76086f8005b}</SharePointProjectItemId>
     </None>
     <Content Include="Pages\Elements.xml" />
     <Content Include="Pages\Default.aspx" />
+    <None Include="SiteContentStructureAppPart\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{2ae68b9c-e1b9-4fb4-a6f7-debf488fdb48}</SharePointProjectItemId>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SharePointProjectItem.spdata">
