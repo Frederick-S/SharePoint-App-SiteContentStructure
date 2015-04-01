@@ -43,9 +43,11 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Content\spinner.css" />
     <Content Include="Pages\SiteContentStructureAppPart.html" />
     <Content Include="SiteContentStructureAppPart\Elements.xml">
       <OpcRelationship>feature-elementmanifest</OpcRelationship>
+      <SubType>Designer</SubType>
     </Content>
     <None Include="Pages\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{6553d739-58d0-4486-97c3-f76086f8005b}</SharePointProjectItemId>
