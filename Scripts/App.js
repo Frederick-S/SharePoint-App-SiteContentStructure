@@ -16,6 +16,7 @@
     var Node = function () {
         this.title = '';
         this.serverRelativeUrl = '';
+        this.absoluteUrl = '';
         this.type = '';
         this.iconUrl = '';
         this.children = [];
@@ -30,7 +31,7 @@
         var listsRequestExecutor = new SP.RequestExecutor(appWebUrl);
 
         subWebsRequestExecutor.executeAsync({
-            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Webs?@target=%27' + absoluteWebUrl + '%27',
+            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Webs?@target=%27' + absoluteWebUrl + '%27&$select=ServerRelativeUrl, Url, Title, SiteLogoUrl',
             method: 'GET',
             headers: {
                 'accept': 'application/json; odata=verbose'
@@ -44,7 +45,7 @@
         });
 
         listsRequestExecutor.executeAsync({
-            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Lists?@target=%27' + absoluteWebUrl + '%27',
+            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Lists?@target=%27' + absoluteWebUrl + '%27&$select=Title, Hidden, ImageUrl, DefaultDisplayFormUrl',
             method: 'GET',
             headers: {
                 'accept': 'application/json; odata=verbose'
@@ -63,8 +64,8 @@
     var hostWebUrl = queryStringParameters.SPHostUrl;
 
     queryWeb(hostWebUrl).then(function (subWebsResponse, listsRespnose) {
-
-
+        var subWebsData = subWebsResponse.body;
+        var listsData = listsRespnose.body;
     }, function (errorMessage) {
 
     });
