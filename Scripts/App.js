@@ -19,11 +19,11 @@
         this.serverRelativeUrl = '';
         this.absoluteUrl = '';
         this.type = '';
-        this.iconUrl = '';
+        this.icon = '';
         this.children = [];
     };
 
-    function queryCurrentWeb() {
+    function queryRootWeb() {
         var deferred = $.Deferred();
         var appWebUrl = queryStringParameters.SPAppWebUrl;
         var hostWebUrl = queryStringParameters.SPHostUrl;
@@ -53,7 +53,7 @@
         var listsRequestExecutor = new SP.RequestExecutor(appWebUrl);
 
         subWebsRequestExecutor.executeAsync({
-            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Webs?@target=%27' + absoluteWebUrl + '%27&$select=ID, Title, Url, ServerRelativeUrl, SiteLogoUrl',
+            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Webs?@target=%27' + absoluteWebUrl + '%27&$select=ID, Title, Url, ServerRelativeUrl',
             method: 'GET',
             headers: {
                 'accept': 'application/json; odata=verbose'
@@ -83,6 +83,24 @@
         return $.when(subWebsDeferred, listsDeferred);
     }
 
+    function createRootWebNode(web) {
+        var deferred = $.Deferred(function () {
+            var node = new Node();
+
+            node.id = web.get_id().toString();
+            node.title = web.get_title();
+            node.type = 'SP.Web';
+            node.icon = '/_layouts/15/images/SharePointFoundation16.png';
+            node.absoluteUrl = web.get_url();
+            node.serverRelativeUrl = web.get_serverRelativeUrl();
+            node.expanded = true;
+
+            this.resolve(node);
+        });
+
+        return deferred.promise();
+    }
+
     function createSubNodes(data) {
         var subNodes = [];
 
@@ -105,14 +123,14 @@
                     case 'SP.Web':
                         node.id = result['Id'];
                         node.title = result['Title'];
-                        node.iconUrl = result['SiteLogoUrl'];
+                        node.icon = '/_layouts/15/images/SharePointFoundation16.png';
                         node.absoluteUrl = result['Url'];
                         node.serverRelativeUrl = result['ServerRelativeUrl'];
                         break;
                     case 'SP.List':
                         node.id = result['Id'];
                         node.title = result['Title'];
-                        node.iconUrl = result['ImageUrl'];
+                        node.icon = result['ImageUrl'];
                         node.serverRelativeUrl = result['DefaultDisplayFormUrl'];
                         break;
                     default:
@@ -128,10 +146,10 @@
         return subNodes;
     }
 
-    function createSubNodesForWeb(absoluteWebUrl) {
+    function createSubNodesForWeb(node) {
         var deferred = $.Deferred();
 
-        queryWebChildren(absoluteWebUrl).then(function (subWebsResponse, listsRespnose) {
+        queryWebChildren(node.absoluteUrl).then(function (subWebsResponse, listsRespnose) {
             var subWebsData = subWebsResponse.body;
             var listsData = listsRespnose.body;
 
@@ -140,7 +158,9 @@
 
             var children = subWebsNodes.concat(listsNodes);
 
-            deferred.resolve(children);
+            node.children = children;
+
+            deferred.resolve(node);
         }, function (errorMessage) {
             deferred.reject(errorMessage);
         });
@@ -148,26 +168,20 @@
         return deferred.promise();
     }
 
-    queryCurrentWeb().done(function (web) {
-        var node = new Node();
-        node.id = web.get_id().toString();
-        node.title = web.get_title();
-        node.type = 'SP.Web';
-        node.absoluteUrl = web.get_url();
-        node.serverRelativeUrl = web.get_serverRelativeUrl();
-        node.expanded = true;
+    function render(node) {
+        if (!node) {
+            return;
+        }
 
-        createSubNodesForWeb(web.get_url()).done(function (children) {
-            node.children = children;
-
-            $('.spinner').hide();
-            $('.container').fancytree({
-                source: [node]
-            });
-        }).fail(function (errorMessage) {
-            alert(errorMessage);
+        $('.spinner').hide();
+        $('.container').fancytree({
+            source: [node]
         });
-    }).fail(function (errorMessage) {
+    }
+    
+    function onError(errorMessage) {
         alert(errorMessage);
-    });
+    }
+
+    queryRootWeb().then(createRootWebNode, onError).then(createSubNodesForWeb, onError).then(render);
 })(jQuery, SP);
