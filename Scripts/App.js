@@ -126,12 +126,15 @@
                         node.icon = '/_layouts/15/images/SharePointFoundation16.png';
                         node.absoluteUrl = result['Url'];
                         node.serverRelativeUrl = result['ServerRelativeUrl'];
+                        node.lazy = true;
+                        
                         break;
                     case 'SP.List':
                         node.id = result['Id'];
                         node.title = result['Title'];
                         node.icon = result['ImageUrl'];
                         node.serverRelativeUrl = result['DefaultDisplayFormUrl'];
+
                         break;
                     default:
                         break;
@@ -175,7 +178,28 @@
 
         $('.spinner').hide();
         $('.container').fancytree({
-            source: [node]
+            source: [node],
+            lazyLoad: function (event, data) {
+                switch (data.node.data.type) {
+                    case 'SP.Web':
+                        var node = new Node();
+                        node.absoluteUrl = data.node.data.absoluteUrl;
+
+                        data.result = $.Deferred(function () {
+                            var deferred = this;
+
+                            createSubNodesForWeb(node).then(function (node) {
+                                deferred.resolve(node.children);
+                            });
+                        });
+
+                        break;
+                    case 'SP.List':
+                        break;
+                    default:
+                        break;
+                }
+            },
         });
     }
     
