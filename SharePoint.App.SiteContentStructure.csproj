@@ -43,8 +43,13 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Content\App.css" />
+    <Content Include="Content\icons.gif" />
+    <Content Include="Content\loading.gif" />
     <Content Include="Content\spinner.css" />
+    <Content Include="Content\ui.fancytree.min.css" />
     <Content Include="Pages\SiteContentStructureAppPart.html" />
+    <Content Include="Scripts\jquery.fancytree-all.min.js" />
     <Content Include="SiteContentStructureAppPart\Elements.xml">
       <OpcRelationship>feature-elementmanifest</OpcRelationship>
       <SubType>Designer</SubType>
@@ -70,7 +75,6 @@
       <SharePointProjectItemId>{161b3c0a-1db1-411e-a122-4c90aae1f09d}</SharePointProjectItemId>
     </None>
     <Content Include="Content\Elements.xml" />
-    <Content Include="Content\App.css" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\AppIcon.png">

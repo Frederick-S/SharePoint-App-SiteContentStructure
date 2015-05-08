@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Elements xmlns="http://schemas.microsoft.com/sharepoint/">
   <Module Name="Content">
-    <File Path="Content\App.css" Url="Content/App.css" ReplaceContent="TRUE" />
     <File Path="Content\spinner.css" Url="Content/spinner.css" ReplaceContent="TRUE" />
+    <File Path="Content\icons.gif" Url="Content/icons.gif" ReplaceContent="TRUE" />
+    <File Path="Content\loading.gif" Url="Content/loading.gif" ReplaceContent="TRUE" />
+    <File Path="Content\ui.fancytree.min.css" Url="Content/ui.fancytree.min.css" ReplaceContent="TRUE" />
+    <File Path="Content\App.css" Url="Content/App.css" ReplaceContent="TRUE" />
   </Module>
 </Elements>
