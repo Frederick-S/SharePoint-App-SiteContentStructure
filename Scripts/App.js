@@ -1,4 +1,4 @@
-﻿(function ($, SP) {
+﻿(function ($, SP, window) {
     function getQueryStringParameters() {
         var params = document.URL.split("?")[1].split("&");
         var obj = {};
@@ -16,7 +16,6 @@
     var Node = function () {
         this.id = '';
         this.title = '';
-        this.serverRelativeUrl = '';
         this.absoluteUrl = '';
         this.type = '';
         this.icon = '';
@@ -53,7 +52,7 @@
         var listsRequestExecutor = new SP.RequestExecutor(appWebUrl);
 
         subWebsRequestExecutor.executeAsync({
-            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Webs?@target=%27' + absoluteWebUrl + '%27&$select=ID, Title, Url, ServerRelativeUrl',
+            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Webs?@target=%27' + absoluteWebUrl + '%27&$select=ID, Title, Url',
             method: 'GET',
             headers: {
                 'accept': 'application/json; odata=verbose'
@@ -67,7 +66,7 @@
         });
 
         listsRequestExecutor.executeAsync({
-            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Lists?@target=%27' + absoluteWebUrl + '%27&$select=ID, Title, DefaultDisplayFormUrl, ImageUrl&$filter=Hidden eq false',
+            url: appWebUrl + '/_api/SP.AppContextSite(@target)/web/Lists?@target=%27' + absoluteWebUrl + '%27&$select=ID, Title, DefaultViewUrl, ParentWebUrl, ImageUrl&$filter=Hidden eq false',
             method: 'GET',
             headers: {
                 'accept': 'application/json; odata=verbose'
@@ -92,7 +91,6 @@
             node.type = 'SP.Web';
             node.icon = '/_layouts/15/images/SharePointFoundation16.png';
             node.absoluteUrl = web.get_url();
-            node.serverRelativeUrl = web.get_serverRelativeUrl();
             node.expanded = true;
 
             this.resolve(node);
@@ -101,7 +99,7 @@
         return deferred.promise();
     }
 
-    function createSubNodes(data) {
+    function createSubNodes(data, parentWebAbsoluteUrl) {
         var subNodes = [];
 
         if (!data) {
@@ -125,15 +123,22 @@
                         node.title = result['Title'];
                         node.icon = '/_layouts/15/images/SharePointFoundation16.png';
                         node.absoluteUrl = result['Url'];
-                        node.serverRelativeUrl = result['ServerRelativeUrl'];
                         node.lazy = true;
-                        
+
                         break;
                     case 'SP.List':
                         node.id = result['Id'];
                         node.title = result['Title'];
                         node.icon = result['ImageUrl'];
-                        node.serverRelativeUrl = result['DefaultDisplayFormUrl'];
+
+                        var parentWebUrl = result['ParentWebUrl'];
+                        var defaultViewUrl = result['DefaultViewUrl'];
+                        
+                        if (parentWebUrl == '/') {
+                            node.absoluteUrl = parentWebAbsoluteUrl + defaultViewUrl;
+                        } else {
+                            node.absoluteUrl = parentWebAbsoluteUrl + defaultViewUrl.replace(new RegExp(parentWebUrl), '');
+                        }
 
                         break;
                     default:
@@ -157,7 +162,7 @@
             var listsData = listsRespnose.body;
 
             var subWebsNodes = createSubNodes(subWebsData);
-            var listsNodes = createSubNodes(listsData);
+            var listsNodes = createSubNodes(listsData, node.absoluteUrl);
 
             var children = subWebsNodes.concat(listsNodes);
 
@@ -200,12 +205,25 @@
                         break;
                 }
             },
+            click: function (event, data) {
+                var node = data.node;
+
+                if (data.targetType == 'title') {
+                    window.open(node.data.absoluteUrl, '_blank');
+                }
+            }
         });
     }
-    
+
     function onError(errorMessage) {
         alert(errorMessage);
     }
 
-    queryRootWeb().then(createRootWebNode, onError).then(createSubNodesForWeb, onError).then(render);
-})(jQuery, SP);
+    var App = {
+        run: function () {
+            queryRootWeb().then(createRootWebNode, onError).then(createSubNodesForWeb, onError).then(render);
+        }
+    };
+
+    window.App = App;
+})(jQuery, SP, window);
